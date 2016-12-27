@@ -1,0 +1,140 @@
+
+<!DOCTYPE html>
+
+
+<html class="no-js" lang="en">
+<head>
+<meta charset="utf-8">
+<title>In which I decide to delegate Rails to the API layer - Polina Soshnin</title>
+<meta name="author" content="Polina Soshnin">
+<meta name="HandheldFriendly" content="True">
+<meta name="MobileOptimized" content="320">
+<meta name="description" content="In which I decide to delegate Rails to the API layer">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="canonical" href="https://polina.io/blog/2016/12/10/thoughts/">
+<link href="/favicon.ico" rel="icon">
+<link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+<link href="/atom.xml" rel="alternate" title="Julia Evans" type="application/atom+xml">
+ 
+<link href="https://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="https://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href='https://fonts.googleapis.com/css?family=Montserrat:700,400' rel='stylesheet' type='text/css'>
+<link href='https://fonts.googleapis.com/css?family=Alegreya:400,900,700' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">`
+</head>
+<body>
+<div id="wrap">
+<header role="banner">
+<hgroup>
+<h1><a href="/">Polina Soshnin</a></h1>
+</hgroup>
+<ul class="header-links">
+<span><li><a href="/about">About</a></li>
+<li><a href="/projects">Projects</a></li></span>
+    <li><a href="https://github.com/polinadotio" target="_blank">Github</a></li></span>
+    <li><a href="https://www.linkedin.com/in/polinasoshnin" target="_blank">LinkedIn</a></li></span>
+</ul>
+</header>
+<nav role="navigation" class="header-nav"><ul class="main-navigation">
+<li><a href="/categories/favorite/">Favorites</a></li>
+    <li><a href="/categories/ruby/">Ruby</a></li>
+</ul>
+</nav>
+<div id="main">
+<div id="content">
+
+<div>
+<article class="hentry" role="article">
+<header>
+<h1 class="entry-title">In which I decide to delegate Rails to the API layer</h1>
+
+<div class="post-tags">
+  
+  •
+  
+    <a class="post-tag" href="/categories/favorite">favorite</a> 	•
+  
+  
+</div>
+<p class="meta">
+<time datetime="2015-11-27T20:37:51" pubdate data-updated="true"></time>
+</p>
+</header>
+<div class="entry-content">
+     
+
+<p>I have been tinkering with Rails in my free time for about a year now. Rails was my first foray into web development and Flask was my second, so until now I haven&rsquo;t spent much time using Javascript.</p>
+
+<p>After spending a few weeks getting more familiar with the wonders of ES6, Coffeescript, Underscore, and jQuery, I recently started working with <a href="http://backbonejs.org/">Backbone.js</a> and have started implementing it in my Rails projects. It has an event system that&rsquo;s nice, and &lsquo;listeners&rsquo; that &lsquo;trigger&rsquo; events. Prior to Backbone I had used a sprinkling of jQuery and Ajax in my projects. Since I could inject Javascript here and there I didn&rsquo;t really understand why someone couldn&rsquo;t just use what Rails gives you (HTML views). So I started thinking about what Rails is really good at and why someone would make the decision to add Backbone to it.</p>
+
+<p>I think Rails is really good at creating RESTful web services. It structures its routing in terms of a set of resources accessed through uniform URIs that are defined in <code>routes.rb</code>. This is important because it makes Rails inherently <strong>stateless</strong>. If you look at a traditional Rails app, you can split it into the following:</p>
+
+<ul>
+<li>stateless HTML resources for humans</li>
+<li>stateless JSON (API) resources for machines</li>
+</ul>
+
+<p>This setup has a few ramifications. The first is this means all of our HTML rendering is done server-side. That&rsquo;s okay, because it&rsquo;s how our request/response model works. However, since we are relying on the server to update the UI, it means that our interface is only as fast as our network connection. We are stuck in &ldquo;click and wait&rdquo; land.</p>
+
+<p>What if instead of relying on the server to update the UI, we persisted state in the DOM and re-rendered our templates client side? That would be nice, because then we could build out responsive asynchronous interfaces. Our Rails app would no longer be a simple website, it could be a rich web app with highly interactive HTML pages!</p>
+
+<p>But as I mentioned before, Rails is inherently stateless. How would one go about adding rich interactivity to a Rails app? Well, there are client side frameworks out there that are well suited to the task, so what you&rsquo;ll end up doing is replacing your HTML views with something like Backbone. Instead of your Rails app returning HTML views, it can now act as an API for your Backbone app and return JSON. Your Rails + Backbone app now looks like the following:</p>
+
+<ul>
+<li>stateful rich client side UI provided by the Backbone layer for humans</li>
+<li>stateless resource oriented RESTful API provided by the Rails layer for machines</li>
+</ul>
+
+<p>Backbone <a href="http://backbonejs.org/#FAQ-rails">originally started</a> as a Javascript library in a Rails application, so it lends itself to pairing with Rails very nicely. It is a light framework (&lt;1000 lines of code) that allows you to structure your Javascript code in MVC fashion. It is also based on RESTful services. Whenever you create, update or destroy a Backbone model, you do so via the standard HTTP actions sent to URIs which assume a RESTful architecture (which we have!). When you do this, you are using Rails as an API.</p>
+
+<p>I&rsquo;m glad that I&rsquo;ve started learning more Javascript and that I&rsquo;m discovering the world of client-side applications. Instead of replacing Rails, I think adding client side frameworks to it complements nicely:</p>
+
+<ul>
+<li>Rails makes an excellent CRUD RESTful API</li>
+<li>Its asset pipeline makes it straightforward to serve up client side MVCs.</li>
+<li>It has a good ORM, excellent libraries and a really awesome community.</li>
+</ul>
+
+<p>I&rsquo;m really happy with delegating Rails to the API layer. This is also a great turning point in my web development journey&ndash; at this moment my interests of focus are learning more about functional reactive programming, building asynchronous interfaces, and learning how to design great APIs.</p>
+
+<h4 id="further-reading">Further reading</h4>
+
+<ul>
+<li><a href="https://gumroad.com/l/backbone-js-on-rails">Backbone on Rails book by thoughtbot</a></li>
+<li><a href="http://blog.alexmaccaw.com/rails-is-just-and-api-and-that-s-ok">Rails is just an API and that&rsquo;s okay</a></li>
+<li><a href="http://stackoverflow.com/questions/11918586/rails-and-backbone-working-together">Rails and Backbone working together</a></li>
+</ul>
+
+</div>
+<footer>
+<div class="sharing">
+</div>
+<p class="meta">
+   
+    <a class="basic-alignment left" href="https://polina.io/blog/2016/12/10/interviewing-roadmap/" title="Previous Post: Your Technical Interviewing Roadmap">Your Technical Interviewing Roadmap</a>
+  
+   
+    <a class="basic-alignment right" href="https://polina.io/blog/2016/12/10/image-uploading-rails/" title="Previous Post: Adding image uploading to Rails Projects">Adding image uploading to Rails Projects</a>
+  
+</p>
+</footer>
+</article>
+</div>
+
+</div>
+</div>
+<nav role="navigation" class="footer-nav"> <a href="/">Home</a>
+</nav>
+<footer role="contentinfo">
+
+
+    <span class="credit">
+
+         Made with <i class="fa fa-heart"></i> and <a href="https://gohugo.io/" target="_blank">Hugo</a>.
+        The source code is on <a href="https://github.com/polinadotio/polina_hugo_blog" target="_blank">GitHub</a>.
+
+</footer>
+</div>
+</body>
+</html>
+

@@ -1,0 +1,192 @@
+
+<!DOCTYPE html>
+
+
+<html class="no-js" lang="en">
+<head>
+<meta charset="utf-8">
+<title>Accepting payments with Stripe and Ruby on Rails - Polina Soshnin</title>
+<meta name="author" content="Polina Soshnin">
+<meta name="HandheldFriendly" content="True">
+<meta name="MobileOptimized" content="320">
+<meta name="description" content="Accepting payments with Stripe and Ruby on Rails">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="canonical" href="https://polina.io/blog/2016/12/10/stripe-ruby/">
+<link href="/favicon.ico" rel="icon">
+<link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+<link href="/atom.xml" rel="alternate" title="Julia Evans" type="application/atom+xml">
+ 
+<link href="https://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="https://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href='https://fonts.googleapis.com/css?family=Montserrat:700,400' rel='stylesheet' type='text/css'>
+<link href='https://fonts.googleapis.com/css?family=Alegreya:400,900,700' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">`
+</head>
+<body>
+<div id="wrap">
+<header role="banner">
+<hgroup>
+<h1><a href="/">Polina Soshnin</a></h1>
+</hgroup>
+<ul class="header-links">
+<span><li><a href="/about">About</a></li>
+<li><a href="/projects">Projects</a></li></span>
+    <li><a href="https://github.com/polinadotio" target="_blank">Github</a></li></span>
+    <li><a href="https://www.linkedin.com/in/polinasoshnin" target="_blank">LinkedIn</a></li></span>
+</ul>
+</header>
+<nav role="navigation" class="header-nav"><ul class="main-navigation">
+<li><a href="/categories/favorite/">Favorites</a></li>
+    <li><a href="/categories/ruby/">Ruby</a></li>
+</ul>
+</nav>
+<div id="main">
+<div id="content">
+
+<div>
+<article class="hentry" role="article">
+<header>
+<h1 class="entry-title">Accepting payments with Stripe and Ruby on Rails</h1>
+
+<div class="post-tags">
+  
+</div>
+<p class="meta">
+<time datetime="2015-08-07T21:56:46" pubdate data-updated="true"></time>
+</p>
+</header>
+<div class="entry-content">
+     <p>Global digital currencies such as Bitcoin are disrupting online commerce and the landscape of digital payments is going to undergo a lot of change in the next decade. This reflects a popular use of the internet: to pass bits back and forth that represent transactions in exchange for goods and services.</p>
+
+<p>Buying things on the internet and getting billed for subscriptions is ubiquitous in our day to day lives. Yet, building a site that accepts traditional payment methods can be a daunting task. Dealing with redirects, logins, and checkouts with PayPal API can be a huge pain– but fear not! I will walk through the basic structure of an ecommerce site and then implement an application with Stripe subscription billing and an application with the Hello World of payments: Stripe Checkout for Rails.</p>
+
+<p>####Why Ruby on Rails and Stripe?</p>
+
+<p>Stripe&rsquo;s products are easy to use, well documented, have clear cut pricing, integrate easily into Rails applications, and are arguably the most straightforward way to learn how to handle online payments. They currently offer an <a href="https://stripe.com/docs/api/">API</a> and full-featured <a href="https://stripe.com/docs">checkout</a> handled by Stripe. <a href="http://rubyonrails.org/">Ruby on Rails</a> is a database agnostic, robust, opinionated web development framework with a large community behind it and many resources in which to learn and contribute.</p>
+
+<p>####How ecommerce sites work</p>
+
+<ul>
+<li>Membership sites that restrict access to content (media, Software as a Service (SaaS), etc.)</li>
+<li>Revenue model is the same: subscription based services, usually paid monthly.</li>
+</ul>
+
+<p>####Basic functionality:</p>
+
+<ul>
+<li>Content/web functionality to deliver</li>
+<li>Landing pages to convert visitors to paying customers</li>
+<li>User management to register/remove users</li>
+<li>Access control to limit site wide access</li>
+<li>Authorization management to restrict access to content or services based on role or other characteristics</li>
+<li>Account management to maintain records/subscription status</li>
+<li>Recurring billing system for periodic payment transactions</li>
+</ul>
+
+<p>####Key challenges/requirements:</p>
+
+<ul>
+<li>PCI compliance: key requirement for any ecommerce site. This will minimize risk of customer credit card exposure. Your website will meet PCI compliance if you accept payment information through the Stripe JS library and serve your payment page through SSL. It’s wise to host any app that requires login through an SSL connection.</li>
+<li>Merchant account: a line of credit that allows a business to accept credit card payments from its customers. Stripe provides this service.
+Recurring billing and account management must be in sync. Stripe provides webhooks to make sure this happens. Stripe will initiate an HTTP request to the app and that will notify the app to change a subscription status.</li>
+</ul>
+
+<p>####Setting up Subscription Billing with Stripe API</p>
+
+<ul>
+<li>Use meta tag to set the Stripe Public API Key</li>
+<li>Access external Javascript libraries to submit data to Stripe and obtain a Stripe token that indirectly references a credit card.</li>
+</ul>
+
+<p><img src="/img/articles/stripe_api.png" alt="" style="width: 100%;max-height: 100%"></p>
+
+<p>####Additional considerations for subscriptions:</p>
+
+<ul>
+<li>Tiered pricing for multiple subscription plans</li>
+<li>Optional &ldquo;free trial&rdquo; subscription</li>
+<li>Subscribers can upgrade/downgrade plans</li>
+<li>Subscribers can cancel subscription plans</li>
+<li>Configure the subscription renewal period (Stripe defaults to one month)</li>
+<li>Administrator can change subscription plan or delete user</li>
+<li>Basecamp style subdomains (each user gets their own subdomain)</li>
+<li>Multitenancy database segmentation (ex. using <a href="https://github.com/influitive/apartment">Apartment</a> gem)</li>
+</ul>
+
+<p>#####Landing Page</p>
+
+<p><img src="/img/articles/api_home_page.png" alt="" style="width: 100%;max-height: 100%"></p>
+
+<p>#####Subscribe</p>
+
+<p><img src="/img/articles/api_sign_up.png" alt="" style="width: 100%;max-height: 100%"></p>
+
+<p>#####Admin</p>
+
+<p><img src="/img/articles/api_admin.png" alt="" style="width: 100%;max-height: 100%"></p>
+
+<p>####Setting up Simple Payments with Stripe Checkout</p>
+
+<p>Embedded payment form that works for desktop, mobile, tablet
+Entire purchase experience handled by Stripe.</p>
+
+<p><img src="/img/articles/stripe_checkout.png" alt="" style="width: 100%;max-height: 100%"></p>
+
+<p>#####Landing Page</p>
+
+<p><img src="/img/articles/checkout_list.png" alt="" style="width: 100%;max-height: 100%"></p>
+
+<p>#####Product Checkout</p>
+
+<p><img src="/img/articles/checkout_pay.png" alt="" style="width: 100%;max-height: 100%"></p>
+
+<p>####Future of electronic payments</p>
+
+<ul>
+<li>Mobile: 1.5 billion global smartphone users predicted by 2017</li>
+<li>Underserved merchants want alternative way to pay: SaaS based companies and industries in developing markets</li>
+<li>Decentralized cryptocurrencies gaining traction</li>
+</ul>
+
+<p>####Resources:</p>
+
+<ul>
+<li><a href="https://www.railstutorial.org/book">Ruby on Rails Tutorial</a> by Michael Hartl</li>
+<li><a href="https://www.masteringmodernpayments.com/">Mastering Modern Payments: Using Stripe with Rails</a> by Pete Keen</li>
+<li>Daniel Kehoe’s <a href="http://railsapps.github.io/">RailsApps</a> Project</li>
+<li><a href="http://gilesbowkett.blogspot.com/2013/10/new-ebook-software-as-disservice-fixing.html">Software as a Disservice</a> by Giles Bowkett</li>
+</ul>
+
+</div>
+<footer>
+<div class="sharing">
+</div>
+<p class="meta">
+   
+    <a class="basic-alignment left" href="https://polina.io/blog/2016/12/10/creating-a-syllabus-to-learn-ruby-on-rails/" title="Previous Post: Creating a syllabus to learn Ruby on Rails">Creating a syllabus to learn Ruby on Rails</a>
+  
+   
+    <a class="basic-alignment right" href="https://polina.io/blog/2016/12/10/setting-up-personal-site/" title="Previous Post: Setting up my personal site">Setting up my personal site</a>
+  
+</p>
+</footer>
+</article>
+</div>
+
+</div>
+</div>
+<nav role="navigation" class="footer-nav"> <a href="/">Home</a>
+</nav>
+<footer role="contentinfo">
+
+
+    <span class="credit">
+
+         Made with <i class="fa fa-heart"></i> and <a href="https://gohugo.io/" target="_blank">Hugo</a>.
+        The source code is on <a href="https://github.com/polinadotio/polina_hugo_blog" target="_blank">GitHub</a>.
+
+</footer>
+</div>
+</body>
+</html>
+

@@ -1,0 +1,137 @@
+
+<!DOCTYPE html>
+
+
+<html class="no-js" lang="en">
+<head>
+<meta charset="utf-8">
+<title>Setting up my personal site - Polina Soshnin</title>
+<meta name="author" content="Polina Soshnin">
+<meta name="HandheldFriendly" content="True">
+<meta name="MobileOptimized" content="320">
+<meta name="description" content="Setting up my personal site">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="canonical" href="https://polina.io/blog/2016/12/10/setting-up-personal-site/">
+<link href="/favicon.ico" rel="icon">
+<link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+<link href="/atom.xml" rel="alternate" title="Julia Evans" type="application/atom+xml">
+ 
+<link href="https://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="https://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href='https://fonts.googleapis.com/css?family=Montserrat:700,400' rel='stylesheet' type='text/css'>
+<link href='https://fonts.googleapis.com/css?family=Alegreya:400,900,700' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">`
+</head>
+<body>
+<div id="wrap">
+<header role="banner">
+<hgroup>
+<h1><a href="/">Polina Soshnin</a></h1>
+</hgroup>
+<ul class="header-links">
+<span><li><a href="/about">About</a></li>
+<li><a href="/projects">Projects</a></li></span>
+    <li><a href="https://github.com/polinadotio" target="_blank">Github</a></li></span>
+    <li><a href="https://www.linkedin.com/in/polinasoshnin" target="_blank">LinkedIn</a></li></span>
+</ul>
+</header>
+<nav role="navigation" class="header-nav"><ul class="main-navigation">
+<li><a href="/categories/favorite/">Favorites</a></li>
+    <li><a href="/categories/ruby/">Ruby</a></li>
+</ul>
+</nav>
+<div id="main">
+<div id="content">
+
+<div>
+<article class="hentry" role="article">
+<header>
+<h1 class="entry-title">Setting up my personal site</h1>
+
+<div class="post-tags">
+  
+</div>
+<p class="meta">
+<time datetime="2015-08-01T21:59:14" pubdate data-updated="true"></time>
+</p>
+</header>
+<div class="entry-content">
+     
+
+<p>This was originally going to be a few notes on how to set up a Middleman blog, but I wanted to do my personal site justice and document my previous experiences. This current site is the 5th(!) iteration of my personal site. Historically I like to tinker with my personal page and like to iterate frequently. Here are the previous versions:</p>
+
+<ul>
+<li>Jekyll <a href="https://github.com/polinadotio/psoshnin.github.io--v1/tree/jekyll-bootstrap">blog</a></li>
+<li><a href="https://github.com/polinadotio/single-page-site-with-d3">Single Page App</a> using a D3.js visualization</li>
+<li>Octopress <a href="https://github.com/polinadotio/psoshnin.github.io--v3">blog</a></li>
+<li>Homemade <a href="https://github.com/polinadotio/static-blog-generator">static blog generator</a> written in Flask</li>
+</ul>
+
+<p>All are static sites and all are hosted using <a href="https://pages.github.com/">Github pages</a>.</p>
+
+<h4 id="what-is-a-static-site">What is a static site?</h4>
+
+<p>A static site is one that is comprised solely of static content. This means that all of your HTML, CSS, and Javascript files already exist and are waiting to served. Dynamic sites, to contrast, generate pages on demand and may return different content based on the request, what&rsquo;s in the database, etc.</p>
+
+<p>There&rsquo;s a couple of great things about using a static site. The first is that serving static content simplifies the process of deploying your site. For personal blogs that usually host articles and such, there isn&rsquo;t any need for dynamic content. This also leads to better security and a performance boost (it&rsquo;s very easy to cache static content and you&rsquo;re not running any application code).</p>
+
+<p>The second is that Github allows you to host a static site for free using Github pages. This is very convenient, especially since you may already be keeping your site on Github :).</p>
+
+<h4 id="how-do-i-make-a-static-site">How do I make a static site?</h4>
+
+<p>The simplest thing you can do is create an <code>index.html</code> file in a Github repo and title the repo <code>github-username.github.io</code>. When you go to that link you&rsquo;ll see your html file.</p>
+
+<p>The next thing you can do is try out a static site generator. They can make the deployment process nicer for you and add special features that make blogging easier. Here are a few popular static site generators:</p>
+
+<ul>
+<li><a href="http://jekyllrb.com/">Jekyll</a>, generator written in Ruby.</li>
+<li><a href="https://github.com/imathis/octopress">Octopress</a>, a blogging framework built on top of Jekyll.</li>
+<li><a href="http://blog.getpelican.com/">Pelican</a>, generator written in Python.</li>
+<li><a href="https://www.gitbook.com/">Gitbook</a>, a full-featured publishing platform.</li>
+</ul>
+
+<p>A third option is to roll your own static site generator. I went this route after playing around with both Jekyll and Octopress. They both have a lot of awesome features, but I wasn&rsquo;t using most of them and I was getting bogged down by how much code I was sifting through that I didn&rsquo;t understand. So I made my own! I used <a href="http://flask.pocoo.org/">Flask</a> and <a href="http://pythonhosted.org/Frozen-Flask/">Frozen-Flask</a>. If you&rsquo;re interested in learning more, I hope to write a blog post on it in the future.</p>
+
+<h4 id="why-middleman">Why Middleman?</h4>
+
+<p><a href="https://middlemanapp.com/">Middleman</a> is a static site generator written by the lovely folks at <a href="https://thoughtbot.com/">thoughtbot</a>. I initially gave Middleman a shot because it&rsquo;s very similar to Rails and I was learning Rails at the time. Middleman uses concepts like partials, erb/haml templating, and the asset pipeline which are all things you&rsquo;ll find when using Rails.</p>
+
+<p>The reason I&rsquo;ve decided to stick with Middleman is I&rsquo;ve found it to be a nice compromise between the perks of using a maintained static site generator and using a tool that is lightweight and doesn&rsquo;t make me feel bogged down by superfluous features. I also think the thoughtbot team is really awesome.</p>
+
+<h4 id="my-workflow">My workflow</h4>
+
+<p>My Middleman generator lives in the <code>source</code> branch and my blog lives in <code>master</code>. I make all of my edits in <code>source</code>. To create a new blog post, I add a <code>post-title.html.markdown</code> file to my articles directory and write using Markdown. To see my site locally I run <code>$ middleman</code>. To deploy to <code>master</code> I run <code>$ middleman build</code> to build my static content and then <code>$ middleman deploy</code>.</p>
+
+</div>
+<footer>
+<div class="sharing">
+</div>
+<p class="meta">
+   
+    <a class="basic-alignment left" href="https://polina.io/blog/2016/12/10/stripe-ruby/" title="Previous Post: Accepting payments with Stripe and Ruby on Rails">Accepting payments with Stripe and Ruby on Rails</a>
+  
+   
+    <a class="basic-alignment right" href="https://polina.io/blog/2016/12/10/what-developers-do/" title="Previous Post: What does a software developer do?">What does a software developer do?</a>
+  
+</p>
+</footer>
+</article>
+</div>
+
+</div>
+</div>
+<nav role="navigation" class="footer-nav"> <a href="/">Home</a>
+</nav>
+<footer role="contentinfo">
+
+
+    <span class="credit">
+
+         Made with <i class="fa fa-heart"></i> and <a href="https://gohugo.io/" target="_blank">Hugo</a>.
+        The source code is on <a href="https://github.com/polinadotio/polina_hugo_blog" target="_blank">GitHub</a>.
+
+</footer>
+</div>
+</body>
+</html>
+

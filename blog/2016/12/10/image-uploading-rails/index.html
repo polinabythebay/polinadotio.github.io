@@ -1,0 +1,183 @@
+
+<!DOCTYPE html>
+
+
+<html class="no-js" lang="en">
+<head>
+<meta charset="utf-8">
+<title>Adding image uploading to Rails Projects - Polina Soshnin</title>
+<meta name="author" content="Polina Soshnin">
+<meta name="HandheldFriendly" content="True">
+<meta name="MobileOptimized" content="320">
+<meta name="description" content="Adding image uploading to Rails Projects">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="canonical" href="https://polina.io/blog/2016/12/10/image-uploading-rails/">
+<link href="/favicon.ico" rel="icon">
+<link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+<link href="/atom.xml" rel="alternate" title="Julia Evans" type="application/atom+xml">
+ 
+<link href="https://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="https://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href='https://fonts.googleapis.com/css?family=Montserrat:700,400' rel='stylesheet' type='text/css'>
+<link href='https://fonts.googleapis.com/css?family=Alegreya:400,900,700' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">`
+</head>
+<body>
+<div id="wrap">
+<header role="banner">
+<hgroup>
+<h1><a href="/">Polina Soshnin</a></h1>
+</hgroup>
+<ul class="header-links">
+<span><li><a href="/about">About</a></li>
+<li><a href="/projects">Projects</a></li></span>
+    <li><a href="https://github.com/polinadotio" target="_blank">Github</a></li></span>
+    <li><a href="https://www.linkedin.com/in/polinasoshnin" target="_blank">LinkedIn</a></li></span>
+</ul>
+</header>
+<nav role="navigation" class="header-nav"><ul class="main-navigation">
+<li><a href="/categories/favorite/">Favorites</a></li>
+    <li><a href="/categories/ruby/">Ruby</a></li>
+</ul>
+</nav>
+<div id="main">
+<div id="content">
+
+<div>
+<article class="hentry" role="article">
+<header>
+<h1 class="entry-title">Adding image uploading to Rails Projects</h1>
+
+<div class="post-tags">
+  
+</div>
+<p class="meta">
+<time datetime="2015-11-25T21:43:41" pubdate data-updated="true"></time>
+</p>
+</header>
+<div class="entry-content">
+     
+
+<p>When I first looked into adding images to my Rails applications, I thought I had one problem I needed to solve. After doing a bit of research, I started to realize I actually had three problems I needed to solve:</p>
+
+<ul>
+<li>how to upload an image</li>
+<li>how to resize an image</li>
+<li>how to store an image</li>
+</ul>
+
+<p>I haven&rsquo;t found a gem that lets you do all of these things in one shot. After a bit of research and trail and error, here are the two main options I found:</p>
+
+<h4 id="option-1-carrierwave-minimagick-imagemagick-fog-s3">Option 1: Carrierwave + MiniMagick + ImageMagick + Fog + S3</h4>
+
+<p>This involves a lot of moving parts. Let&rsquo;s break it down:</p>
+
+<ul>
+<li><a href="https://github.com/carrierwaveuploader/carrierwave">CarrierWave</a> is a file uploader for Rack based applications. You can install this as a gem.</li>
+<li><a href="https://github.com/minimagick/minimagick">MiniMagick</a> is a Ruby wrapper for a command line application called <a href="http://www.imagemagick.org/script/index.php">ImageMagick</a>, which lets you manipulate images. You need to first install ImageMagick locally using <code>brew install imagemagick</code> and then you can install MiniMagick as a gem.</li>
+<li>Amazon&rsquo;s <a href="https://aws.amazon.com/s3/">S3</a> is a popular and robust choice for storing files such as images. In order to play nicely with Amazon cloud services there&rsquo;s a gem you can use called <a href="https://github.com/fog/fog">Fog</a> that helps you navigate the &ldquo;fog&rdquo;.</li>
+</ul>
+
+<p>I tried this approach, and it was all fine and dandy until I got to S3. I couldn&rsquo;t quite escape the fog. I ended up with a cryptic config error and spent another 30 min staring at Amazon&rsquo;s admin panel trying to figure out which key(s) it didn&rsquo;t like. For my lightweight app that just wanted to store simple images, it was a lot of work to get going. I starting looking around for a simpler alternative.</p>
+
+<h4 id="option-2-carrierwave-cloudinary">Option 2: Carrierwave + Cloudinary</h4>
+
+<p>I&rsquo;m so happy I found this pair! Cloudinary handles both image manipulation and cloud storage for you. And as a bonus, it comes as a Heroku addon! It took 5 min to setup and worked like a charm.</p>
+
+<p>The only downside to this adventure with image uploaders is that I didn&rsquo;t find a great tutorial out there for tying everything together. Once you find the tools, it&rsquo;s not really clear how you integrate it with your existing models and views. Here&rsquo;s my attempt at that:</p>
+
+<h3 id="using-carrierwave-and-cloudinary">Using Carrierwave and Cloudinary</h3>
+
+<p>We are going to add a profile picture to a user. Here is an overview of what we want to accomplish:</p>
+
+<p><img src="/img/articles/cloudinary.jpg" alt="" style="width: 100%;max-height: 100%"></p>
+
+<p><strong>Step 1: Add Carrierwave and Cloudinary to your Gemfile</strong></p>
+
+<script src="https://gist.github.com/polinadotio/0b4be8f5e1693d626cac.js"></script>
+
+<p><strong>Step 2: Add Cloudinary to Heroku</strong></p>
+
+<script src="https://gist.github.com/polinadotio/8b6f09b9d0ade5e2019c.js"></script>
+
+<p><strong>Step 3: Add a Cloudinary config to your app</strong></p>
+
+<p>If you go to <code>$ heroku config</code> you should now see a Cloudinary URL. Create a config file called <code>config/initializers/cloudinary.rb</code> and store the URL in <code>config/application.yml</code> if you&rsquo;re using <a href="https://github.com/laserlemon/figaro">Figaro</a> to handle your environmental variables.</p>
+
+<script src="https://gist.github.com/polinadotio/31e48182f9c74ea854f7.js"></script>
+
+<p>Remember to update your environment variables in Heroku, <code>$ figaro heroku:set -e production</code>.</p>
+
+<p><strong>Step 4: Create an image uploader</strong></p>
+
+<p>Carrierwave has an generator we can use to create an uploader tool. This uploader provides config options and methods to upload and display our images. Let&rsquo;s call it Avatar. Each of our users will have an avator associated with them, so we will need to add an avator attribute to the users table.</p>
+
+<script src="https://gist.github.com/polinadotio/b12e2ed03a04a2a05d25.js"></script>
+
+<p><strong>Step 5: Modify the User model</strong></p>
+
+<p>CarrierWave provides a method called <code>mount_uploader</code> which gives a model attribute additional functionality to assist in uploading. Add the following to <code>user.rb</code>:</p>
+
+<script src="https://gist.github.com/polinadotio/7dea6c166e06958cecf3.js"></script>
+
+<p>The second parameter <code>AvatarUploader</code> tells it which file to use for uploading.</p>
+
+<p><strong>Step 6: Modify the User controller</strong></p>
+
+<p>We added a new <code>avatar</code> attribute to our User model. Now we need to allow the attribute to be updated in our controller. Change your params to the following:</p>
+
+<script src="https://gist.github.com/polinadotio/85bacc728f727fcfcdc6.js"></script>
+
+<p><strong>Step 7: Modify the uploader</strong></p>
+
+<p>Our uploader processes and resizes the images. We want to add/uncomment the following:</p>
+
+<script src="https://gist.github.com/polinadotio/98a5664920020e79e6a9.js"></script>
+
+<p><strong>Step 8: Modify the views</strong></p>
+
+<p>You can do this many different ways. Here&rsquo;s one example. I&rsquo;m calling methods provided by <code>avatar_uploader.rb</code> on my User object to generate a profile picture. Here is a submit form:</p>
+
+<script src="https://gist.github.com/polinadotio/5adad618040d0d042383.js"></script>
+
+<p>Notice that the above method <code>image_tag()</code> is being used to display the current profile picture.</p>
+
+<p><strong>Step 9: Cleanup</strong></p>
+
+<script src="https://gist.github.com/polinadotio/ef0489abf75b46d57f7d.js"></script>
+
+<p>Putting it all together: here is a <a href="https://github.com/polinadotio/wellesley-urban-dictionary/commit/bc8a71ea5e189f7471bc505fdb7fb4b80889f7fb">commit</a> from an app of mine that covers this process from start to finish.</p>
+
+</div>
+<footer>
+<div class="sharing">
+</div>
+<p class="meta">
+   
+    <a class="basic-alignment left" href="https://polina.io/blog/2016/12/10/thoughts/" title="Previous Post: In which I decide to delegate Rails to the API layer">In which I decide to delegate Rails to the API layer</a>
+  
+   
+    <a class="basic-alignment right" href="https://polina.io/blog/2016/12/10/qualities-software-engineer/" title="Previous Post: Qualities of a good software engineer">Qualities of a good software engineer</a>
+  
+</p>
+</footer>
+</article>
+</div>
+
+</div>
+</div>
+<nav role="navigation" class="footer-nav"> <a href="/">Home</a>
+</nav>
+<footer role="contentinfo">
+
+
+    <span class="credit">
+
+         Made with <i class="fa fa-heart"></i> and <a href="https://gohugo.io/" target="_blank">Hugo</a>.
+        The source code is on <a href="https://github.com/polinadotio/polina_hugo_blog" target="_blank">GitHub</a>.
+
+</footer>
+</div>
+</body>
+</html>
+

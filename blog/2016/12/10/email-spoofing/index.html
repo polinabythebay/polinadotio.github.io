@@ -1,0 +1,141 @@
+
+<!DOCTYPE html>
+
+
+<html class="no-js" lang="en">
+<head>
+<meta charset="utf-8">
+<title>A short guide to email spoofing - Polina Soshnin</title>
+<meta name="author" content="Polina Soshnin">
+<meta name="HandheldFriendly" content="True">
+<meta name="MobileOptimized" content="320">
+<meta name="description" content="A short guide to email spoofing">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="canonical" href="https://polina.io/blog/2016/12/10/email-spoofing/">
+<link href="/favicon.ico" rel="icon">
+<link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+<link href="/atom.xml" rel="alternate" title="Julia Evans" type="application/atom+xml">
+ 
+<link href="https://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="https://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href='https://fonts.googleapis.com/css?family=Montserrat:700,400' rel='stylesheet' type='text/css'>
+<link href='https://fonts.googleapis.com/css?family=Alegreya:400,900,700' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">`
+</head>
+<body>
+<div id="wrap">
+<header role="banner">
+<hgroup>
+<h1><a href="/">Polina Soshnin</a></h1>
+</hgroup>
+<ul class="header-links">
+<span><li><a href="/about">About</a></li>
+<li><a href="/projects">Projects</a></li></span>
+    <li><a href="https://github.com/polinadotio" target="_blank">Github</a></li></span>
+    <li><a href="https://www.linkedin.com/in/polinasoshnin" target="_blank">LinkedIn</a></li></span>
+</ul>
+</header>
+<nav role="navigation" class="header-nav"><ul class="main-navigation">
+<li><a href="/categories/favorite/">Favorites</a></li>
+    <li><a href="/categories/ruby/">Ruby</a></li>
+</ul>
+</nav>
+<div id="main">
+<div id="content">
+
+<div>
+<article class="hentry" role="article">
+<header>
+<h1 class="entry-title">A short guide to email spoofing</h1>
+
+<div class="post-tags">
+  
+</div>
+<p class="meta">
+<time datetime="2015-09-06T21:45:25" pubdate data-updated="true"></time>
+</p>
+</header>
+<div class="entry-content">
+     <p>This is a fun trick I learned that uses a few basic networking concepts. I didn&rsquo;t realize how easy it was to send spoof email via command line. Here&rsquo;s how:</p>
+
+<p>####Basic idea:</p>
+
+<p>Establish a TCP connection to a mail server and use SMTP commands to send email from &ldquo;anyone&rdquo; to &ldquo;anyone&rdquo;. :) You&rsquo;ll see what I mean.</p>
+
+<p>####Concepts:</p>
+
+<p>TCP, or the Transmission Control Protocol, is a transport layer protocol used for establishing logical communication between applications and different hosts that are not physically connected to one another. Applications can be ones running on your computer (a local host) or the internet (Gmail for example). In this case, I am using TCP to establish a connection from my linux account on a college server to a Google mail server. SMTP is the Simple Mail Transfer Protocol that is the de facto standard for sending email across the internet. It&rsquo;s been around since 1982 and is very minimal&ndash; to this day it will only support 7 bit ASCII characters, which amuses me when I think of multimedia email attachments these days. In this example I&rsquo;m going to use telnet to manually send mail through an SMTP mail server.</p>
+
+<p>####Step 1: Establish a TCP Connection</p>
+
+<p>In order to send SMTP commands to a mail server you need to know the host name of the mail server for your domain. My domain is wellesley.edu, so I&rsquo;m going to first query the DNS for the MX record that holds information about my mail domain.</p>
+
+<p>SSH into my linux account:</p>
+
+<script src="https://gist.github.com/polinadotio/2eeb5ddf1bd29755f25f.js"></script>
+
+<p>Query DNS for the mail servers that deliver mail to wellesley.edu:</p>
+
+<script src="https://gist.github.com/polinadotio/61f0ac58a8feec0336e5.js"></script>
+
+<p>From here you can see that Wellesley has 5 different mail servers through Google mail services. We need to pick one of them&ndash; let&rsquo;s pick ALT2.ASPMX.L.GOOGLE.COM. We use telnet to establish the connection and use port 25 because it&rsquo;s a TCP connection:</p>
+
+<script src="https://gist.github.com/polinadotio/c6282f4eb5ad33adcb84.js"></script>
+
+<p>####Step two: Use SMTP commands to send an email</p>
+
+<p>Yay we&rsquo;re connected! Now here&rsquo;s where the fun begins. Let&rsquo;s enter in some commands to send a message. A basic message for SMTP needs the following:</p>
+
+<p><pre><code>
+MAIL FROM: Sender <a href="mailto:sending@email.address">sending@email.address</a>
+RCPT TO: Receiver <a href="mailto:receiving@email.address">receiving@email.address</a>
+DATA
+FROM: <a href="mailto:from@an.address">from@an.address</a>
+T0: <a href="mailto:to@an.address">to@an.address</a>
+SUBJECT: email subject
+Body of email
+.
+QUIT
+</pre></code></p>
+
+<p>Note that there&rsquo;s a period [.] at the end. You will need that. Let&rsquo;s try this!</p>
+
+<script src="https://gist.github.com/polinadotio/5c358ae7a543c019b447.js"></script>
+
+<p>And there you have it. Note: you might need to check your spam folder.</p>
+
+<p><img src="/img/articles/helloworld.png" alt="" style="width: 100%;max-height: 100%"></p>
+
+</div>
+<footer>
+<div class="sharing">
+</div>
+<p class="meta">
+   
+    <a class="basic-alignment left" href="https://polina.io/blog/2016/12/10/qualities-software-engineer/" title="Previous Post: Qualities of a good software engineer">Qualities of a good software engineer</a>
+  
+   
+    <a class="basic-alignment right" href="https://polina.io/blog/2016/12/10/creating-a-syllabus-to-learn-ruby-on-rails/" title="Previous Post: Creating a syllabus to learn Ruby on Rails">Creating a syllabus to learn Ruby on Rails</a>
+  
+</p>
+</footer>
+</article>
+</div>
+
+</div>
+</div>
+<nav role="navigation" class="footer-nav"> <a href="/">Home</a>
+</nav>
+<footer role="contentinfo">
+
+
+    <span class="credit">
+
+         Made with <i class="fa fa-heart"></i> and <a href="https://gohugo.io/" target="_blank">Hugo</a>.
+        The source code is on <a href="https://github.com/polinadotio/polina_hugo_blog" target="_blank">GitHub</a>.
+
+</footer>
+</div>
+</body>
+</html>
+
